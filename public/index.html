@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UK Wind Forecast Monitor</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Forecast Monitoring App</p>
+          <h1>UK wind forecast accuracy, with the horizon logic exposed.</h1>
+          <p class="lede">
+            Compare hourly wind generation actuals against the latest eligible national forecast for the selected period.
+            Forecast eligibility means the forecast must have been published at least the chosen number of hours before the target time.
+          </p>
+        </div>
+        <div class="hero-card">
+          <p class="hero-card-label">Data sources</p>
+          <p class="hero-card-value">BMRS FUELHH + WINDFOR</p>
+          <p class="hero-card-meta">Actuals are normalized to hourly averages so they line up with the forecast timestamps.</p>
+        </div>
+      </header>
+
+      <main class="content-grid">
+        <section class="panel controls-panel">
+          <div class="section-heading">
+            <h2>Controls</h2>
+            <p>All times are interpreted and displayed in UTC.</p>
+          </div>
+
+          <form id="controls" class="controls-grid">
+            <label>
+              <span>Start time</span>
+              <input id="startTime" name="startTime" type="datetime-local" required>
+            </label>
+            <label>
+              <span>End time</span>
+              <input id="endTime" name="endTime" type="datetime-local" required>
+            </label>
+            <label class="slider-field">
+              <span>Minimum forecast horizon</span>
+              <div class="slider-row">
+                <input id="horizon" name="horizon" type="range" min="0" max="48" step="1" value="4">
+                <output id="horizonValue" for="horizon">4h</output>
+              </div>
+            </label>
+            <button type="submit" id="submitButton">Load series</button>
+          </form>
+
+          <div id="status" class="status">Ready.</div>
+
+          <div class="stats-grid" id="statsGrid">
+            <article class="stat-card">
+              <span>Matched points</span>
+              <strong id="matchedPoints">-</strong>
+            </article>
+            <article class="stat-card">
+              <span>Mean absolute error</span>
+              <strong id="maeValue">-</strong>
+            </article>
+            <article class="stat-card">
+              <span>Median absolute error</span>
+              <strong id="medianValue">-</strong>
+            </article>
+            <article class="stat-card">
+              <span>P95 absolute error</span>
+              <strong id="p95Value">-</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="panel chart-panel">
+          <div class="section-heading">
+            <h2>Actual vs forecast</h2>
+            <p>The green line uses the latest forecast that clears the minimum horizon rule for each target timestamp.</p>
+          </div>
+          <div id="chartMount" class="chart-mount"></div>
+          <div id="tooltip" class="tooltip" hidden></div>
+        </section>
+
+        <section class="panel table-panel">
+          <div class="section-heading">
+            <h2>Latest matched observations</h2>
+            <p>Rows are limited to timestamps where both actual and selected forecast values are available.</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Target time</th>
+                  <th>Actual MW</th>
+                  <th>Forecast MW</th>
+                  <th>Error MW</th>
+                  <th>Forecast publish time</th>
+                  <th>Applied horizon</th>
+                </tr>
+              </thead>
+              <tbody id="rows"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
