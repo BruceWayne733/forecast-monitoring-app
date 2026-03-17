@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: forecast-monitoring-app
+    env: node
+    plan: free
+    buildCommand: ""
+    startCommand: node server.mjs
